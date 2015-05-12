@@ -6,6 +6,7 @@
     "active": "search",
     "search": "google",
     "musicplayer": "mpc",
+    "timeformat":"%H:%M:%S",
     "theme" : "dark",
     "modules":[
         {
@@ -23,6 +24,10 @@
         {
             "name":"weather",
             "interval": 30000
+        },
+        {
+            "name":"time",
+            "interval":1000
         }
     ]
 }

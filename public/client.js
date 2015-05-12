@@ -20,6 +20,9 @@ socket.on('ram',function(ram){
 socket.on('weather',function(weather){
     document.getElementById('weather').innerHTML = "<span class='fa fa-sun-o'> - " + JSON.parse(weather).weather[0].description + "</span>";
 });
+socket.on('time', function(time) {
+    document.getElementById('time').innerHTML = time;
+});
 
 $('#command').keypress(function(e){
     if(e.key == "Enter" || e.charCode == 13) { // Enter key

@@ -15,6 +15,15 @@ app.use(express.static(path.join(__dirname,'public')));
 
 global.song = song(io, config);
 
+global.time = function() {
+    exec('date +"' + config.timeformat + '"', function(err, stdout, stderr) {
+        if(err) throw err;
+        if(stdout) {
+            io.emit('time', stdout.toString());
+        }
+    });
+};
+
 global.disk = function(){
     exec("echo \"$(df -h "+ config.partition + " | sed '1d' | awk '{print $3}')/$(df -h " + config.partition + " | sed '1d' | awk '{print $2}')\"",function(err,stdout,stderr){
         if(err) throw err;

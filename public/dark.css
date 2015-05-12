@@ -11,3 +11,9 @@
 #inputs .input-group .btn .fa{
     width: 1em;
 }
+
+#time {
+    margin-top: 10%;
+    font-size: 600%;
+    text-align: center;
+}
