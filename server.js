@@ -5,21 +5,15 @@ var express = require('express'),
     server = require('http').Server(app),
     io = require('socket.io')(server),
     exec = require('child_process').exec,
-    config = require('./config.json');
+    config = require('./config.json'),
+    song = require('./server/song');
 
 server.listen(config.port,'localhost');
 app.use(express.static(path.join(__dirname,'public')));
 
 //Global declarations for easy configuration
 
-global.song = function(){
-    exec('mpc current',function(err,stdout,stderr) {
-        if(err) throw err;
-        if(stdout) {
-            io.emit('song',stdout.toString('utf8'));
-        }
-    });
-};
+global.song = song(io, config);
 
 global.disk = function(){
     exec("echo \"$(df "+ config.partition +" --output=used -h |sed '1d')/$(df "+ config.partition +" --output=avail -h |sed '1d')\"",function(err,stdout,stderr){

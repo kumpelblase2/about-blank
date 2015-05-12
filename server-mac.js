@@ -6,50 +6,14 @@ var express = require('express'),
     io = require('socket.io')(server),
     exec = require('child_process').exec,
     config = require('./config.json'),
-    osascript = require('node-osascript');
+    song = require('./server/song');
 
 server.listen(config.port,'localhost');
 app.use(express.static(path.join(__dirname,'public')));
 
-// start with true to prevent from getting info when we haven't checked if iTunes is running
-var paused = true;
-
-// prevent from loading in each call to iTunesInfo
-var infoCmd = 'tell application "iTunes" to ' +
-            '{ artist of current track as string, ' +
-            'name of current track as string }';
-
-
-
-var iTunesInfo = function() {
-    // iTunes throws an error if it's paused and we try to obtain the current song
-    osascript.execute('tell app "iTunes" to get player state as string', function(err, stdout, stderr) {
-        var state = stdout.toString('utf8');
-        paused = state === 'paused' || state === 'stopped';
-    });
-
-    if(paused) {
-       return;
-    }
-
-    osascript.execute(infoCmd, function(err,stdout,stderr) {
-        if(err) {
-            throw err;
-        }
-        if(stdout) {
-            io.emit('song',stdout.join(' - ').toString('utf8'));
-        }
-    });
-};
-
 //Global declarations for easy configuration
 
-global.song = function(){
-    osascript.execute('tell app "System Events" to count processes whose name is "iTunes"', function(err, stdout, stderr) {
-        if(stdout)
-            iTunesInfo();
-    });
-};
+global.song = song(io, config);
 
 global.disk = function(){
     exec("echo \"$(df -h "+ config.partition + " | sed '1d' | awk '{print $3}')/$(df -h " + config.partition + " | sed '1d' | awk '{print $2}')\"",function(err,stdout,stderr){
